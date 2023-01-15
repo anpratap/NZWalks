@@ -9,10 +9,15 @@ namespace NZWalks.API.Controllers
     public class WalkController : Controller
     {
         private readonly IWalksRepository _walksRepository;
+        private readonly IRegionRepository _regionRepository;
+        private readonly IWalkDifficultyRepository _difficultyRepository;
         private readonly IMapper _mapper;
-        public WalkController(IWalksRepository walksRepository, IMapper mapper)
+        public WalkController(IWalksRepository walksRepository, IRegionRepository regionRepository, 
+            IWalkDifficultyRepository difficultyRepository, IMapper mapper)
         {
             _walksRepository = walksRepository;
+            _regionRepository = regionRepository;   
+            _difficultyRepository = difficultyRepository;
             _mapper = mapper;
         }
 
@@ -38,13 +43,13 @@ namespace NZWalks.API.Controllers
 
         [HttpPost]
         [ActionName("AddWalkAsync")]
-        public async Task<IActionResult> AddWalkAsync([FromBody] Models.DTO.WalkRequest region)
+        public async Task<IActionResult> AddWalkAsync([FromBody] Models.DTO.WalkRequest model)
         {
-            if (region == null)
+            if (!(await ValidateWalkAsync(model)))
             {
-                throw new ArgumentException("ERROR: Model cannot be empty.");
+                return BadRequest(ModelState);
             }
-            var request = _mapper.Map<Models.Domain.Walk>(region);
+            var request = _mapper.Map<Models.Domain.Walk>(model);
             request.Id = Guid.NewGuid();
             var result = await _walksRepository.AddAsync(request);
             if (result == null)
@@ -68,9 +73,9 @@ namespace NZWalks.API.Controllers
         [ActionName("UpdateWalkAsync/{id}")]
         public async Task<IActionResult> UpdateWalkAsync([FromRoute] Guid id, [FromBody] Models.DTO.WalkRequest walk)
         {
-            if (walk == null)
+            if (!(await ValidateWalkAsync(walk)))
             {
-                throw new ArgumentException("ERROR: Model cannot be empty.");
+                return BadRequest(ModelState);
             }
             var request = _mapper.Map<Models.Domain.Walk>(walk);
             request.Id = id;
@@ -80,6 +85,41 @@ namespace NZWalks.API.Controllers
                 return NoContent();
             }
             return Ok(_mapper.Map<Models.DTO.Walk>(result));
+        }
+
+        private async Task<bool> ValidateWalkAsync(Models.DTO.WalkRequest model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError(nameof(model), $"{nameof(model)} canot be null or empty, it is required.");
+            }
+            if (string.IsNullOrWhiteSpace(model?.Name))
+            {
+                ModelState.AddModelError(nameof(model.Name), $"{nameof(model.Name)} canot be null or empty.");
+            }
+
+            if (model?.Length <= 0)
+            {
+                ModelState.AddModelError(nameof(model.Length), $"{nameof(model.Length)} canot be less or equal to zero.");
+            }
+
+            var region = await _regionRepository.GetAsync(model.RegionId);
+            if (region==null)
+            {
+                ModelState.AddModelError(nameof(region), $"{nameof(region)} is invalid.");
+            }
+
+            var walkDifficulty = await _difficultyRepository.GetAsync(model.WalkDifficultyId);
+            if (walkDifficulty == null)
+            {
+                ModelState.AddModelError(nameof(walkDifficulty), $"{nameof(walkDifficulty)} is invalid.");
+            }
+
+            if (ModelState.ErrorCount > 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

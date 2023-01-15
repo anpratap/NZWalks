@@ -40,9 +40,9 @@ namespace NZWalks.API.Controllers
         [ActionName("AddWalkDifficultyAsync")]
         public async Task<IActionResult> AddWalkDifficultyAsync([FromBody] Models.DTO.WalkDifficultyRequest model)
         {
-            if (model == null)
+            if (!ValidateWalkDiffAsync(model))
             {
-                throw new ArgumentException("ERROR: Model cannot be empty.");
+                return BadRequest(ModelState);
             }
             var request = _mapper.Map<Models.Domain.WalkDifficulty>(model);
             request.Id = Guid.NewGuid();
@@ -68,9 +68,9 @@ namespace NZWalks.API.Controllers
         [ActionName("UpdateWalkDifficultyAsync/{id}")]
         public async Task<IActionResult> UpdateWalkDifficultyAsync([FromRoute] Guid id, [FromBody] Models.DTO.WalkDifficultyRequest walk)
         {
-            if (walk == null)
+            if (!ValidateWalkDiffAsync(walk))
             {
-                throw new ArgumentException("ERROR: Model cannot be empty.");
+                return BadRequest(ModelState);
             }
             var request = _mapper.Map<Models.Domain.WalkDifficulty>(walk);
             request.Id = id;
@@ -80,6 +80,24 @@ namespace NZWalks.API.Controllers
                 return NoContent();
             }
             return Ok(_mapper.Map<Models.DTO.WalkDifficulty>(result));
+        }
+
+        private bool ValidateWalkDiffAsync(Models.DTO.WalkDifficultyRequest model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError(nameof(model), $"{nameof(model)} canot be null or empty, it is required.");
+            }
+            if (string.IsNullOrWhiteSpace(model?.Code))
+            {
+                ModelState.AddModelError(nameof(model.Code), $"{nameof(model.Code)} canot be null or empty.");
+            }
+
+            if (ModelState.ErrorCount > 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
