@@ -40,15 +40,21 @@ namespace NZWalks.API.Controllers
             return Ok(_autoMapper.Map<Models.DTO.Region>(result));
         }
 
+        /// <summary>
+        /// This method has used Fluent Validation on passed model, so if there is an error control will not get inside the method
+        /// </summary>
+        /// <param name="region"></param>
+        /// <returns></returns>
         [HttpPost]
         [ActionName("AddRegionAsync")]
         public async Task<IActionResult> AddRegionAsync([FromBody] Models.DTO.RegionRequest region)
         {
+            //.NET validation code
             //ModelState is to be passed back to client to show error messages.
-            if (!ValidateRegionAsync(region))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ValidateRegionAsync(region))
+            //{
+            //    return BadRequest(ModelState);
+            //}
             var request = _autoMapper.Map<Models.Domain.Region>(region);
             request.Id = Guid.NewGuid();
             var result = await _regionRepository.AddAsync(request);

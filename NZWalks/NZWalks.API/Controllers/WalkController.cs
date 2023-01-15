@@ -41,6 +41,11 @@ namespace NZWalks.API.Controllers
             return Ok(_mapper.Map<Models.DTO.Walk>(result));
         }
 
+        /// <summary>
+        /// This method uses .NET + FluentValidation is used to validate passed model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ActionName("AddWalkAsync")]
         public async Task<IActionResult> AddWalkAsync([FromBody] Models.DTO.WalkRequest model)
@@ -89,19 +94,19 @@ namespace NZWalks.API.Controllers
 
         private async Task<bool> ValidateWalkAsync(Models.DTO.WalkRequest model)
         {
-            if (model == null)
-            {
-                ModelState.AddModelError(nameof(model), $"{nameof(model)} canot be null or empty, it is required.");
-            }
-            if (string.IsNullOrWhiteSpace(model?.Name))
-            {
-                ModelState.AddModelError(nameof(model.Name), $"{nameof(model.Name)} canot be null or empty.");
-            }
+            //if (model == null)
+            //{
+            //    ModelState.AddModelError(nameof(model), $"{nameof(model)} canot be null or empty, it is required.");
+            //}
+            //if (string.IsNullOrWhiteSpace(model?.Name))
+            //{
+            //    ModelState.AddModelError(nameof(model.Name), $"{nameof(model.Name)} canot be null or empty.");
+            //}
 
-            if (model?.Length <= 0)
-            {
-                ModelState.AddModelError(nameof(model.Length), $"{nameof(model.Length)} canot be less or equal to zero.");
-            }
+            //if (model?.Length <= 0)
+            //{
+            //    ModelState.AddModelError(nameof(model.Length), $"{nameof(model.Length)} canot be less or equal to zero.");
+            //}
 
             var region = await _regionRepository.GetAsync(model.RegionId);
             if (region==null)

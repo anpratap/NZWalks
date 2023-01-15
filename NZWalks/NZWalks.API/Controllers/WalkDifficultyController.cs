@@ -36,14 +36,19 @@ namespace NZWalks.API.Controllers
             return Ok(_mapper.Map<Models.DTO.WalkDifficulty>(result));
         }
 
+        /// <summary>
+        /// Method uses FluentValidation to validate
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ActionName("AddWalkDifficultyAsync")]
         public async Task<IActionResult> AddWalkDifficultyAsync([FromBody] Models.DTO.WalkDifficultyRequest model)
         {
-            if (!ValidateWalkDiffAsync(model))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ValidateWalkDiffAsync(model))
+            //{
+            //    return BadRequest(ModelState);
+            //}
             var request = _mapper.Map<Models.Domain.WalkDifficulty>(model);
             request.Id = Guid.NewGuid();
             var result = await _walkDiffRepository.AddAsync(request);

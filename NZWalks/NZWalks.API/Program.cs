@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
 using NZWalks.API.Repositiories;
@@ -11,6 +12,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//registering FluentValidation - A third party library to set up validation rules.
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+
 
 //adding db context to IServiceCollection container
 builder.Services.AddDbContext<NZWalksDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalks")); });
