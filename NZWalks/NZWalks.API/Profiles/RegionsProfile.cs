@@ -15,7 +15,10 @@ namespace NZWalks.API.Profiles
             //ReverseMap() is used to convert dto back to domain model
             CreateMap<Models.Domain.Region, Models.DTO.Region>();
                 //.ForMember(dest => dest.RegionCode, options => options.MapFrom(src => src.Code));
-                //.ReverseMap() 
+                //.ReverseMap(); 
+
+            CreateMap<Models.Domain.Region, Models.DTO.RegionRequest>()
+                .ReverseMap();
         }
     }
 }
