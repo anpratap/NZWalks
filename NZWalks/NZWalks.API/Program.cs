@@ -18,6 +18,7 @@ builder.Services.AddDbContext<NZWalksDbContext>(options => { options.UseSqlServe
 //adding repo to container
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IWalksRepository, WalksRepository>();
+builder.Services.AddScoped<IWalkDifficultyRepository, WalkDifficultyRepository>();
 
 //registering auto mapper to the container to be used
 //when application starts it looks up for the assembly Program and looks for all the Profiles created to map models
