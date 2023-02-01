@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
@@ -21,6 +22,7 @@ namespace NZWalks.API.Controllers
             _autoMapper = autoMapper;
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllRegionsAsync()
         {
             var result = await _regionRepository.GetAllAsync();
@@ -30,6 +32,7 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         [Route("{id:guid}")]
         [ActionName("GetRegionAsync")]
+        [Authorize]
         public async Task<IActionResult> GetRegionAsync([FromRoute] Guid id)
         {
             var result = await _regionRepository.GetAsync(id);
@@ -47,6 +50,7 @@ namespace NZWalks.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ActionName("AddRegionAsync")]
+        [Authorize]
         public async Task<IActionResult> AddRegionAsync([FromBody] Models.DTO.RegionRequest region)
         {
             //.NET validation code
@@ -68,6 +72,7 @@ namespace NZWalks.API.Controllers
         [HttpDelete]
         [Route("{id:guid}")]
         [ActionName("DeleteAsync")]
+        [Authorize]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
             await _regionRepository.DeleteAsync(id);
@@ -77,6 +82,7 @@ namespace NZWalks.API.Controllers
         [HttpPut]
         [Route("{id:guid}")]
         [ActionName("UpdateRegionAsync/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateRegionAsync([FromRoute] Guid id, [FromBody] Models.DTO.RegionRequest region)
         {
             if (!ValidateRegionAsync(region))
